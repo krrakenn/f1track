@@ -1,0 +1,93 @@
+track:
+  ds_m: 3.0                  # resampling spacing [m]
+  half_width_margin_m: -1.0   # car half-width + buffer [m]. -1.0 adds 1.0m to legal bounds to allow car's outer half over white line.
+  spline_smoothing_rule: "rms_1.0m"
+
+  nominal_width_default_m: 12.0  # used when a circuit has neither TUM widths nor an override
+  envelope_pad_m: 0.5         # bounds are widened to observed car centres + this pad [m]
+  widen_to_observed: true
+  envelope_quantile: 0.95     # per-window quantile of observed offsets (robust to noise)
+  centerline_rms_m: 0.5       # spline residual target for OSM-derived centre lines [m]
+  centerline_lowpass_sigma_m: 8.0  # Gaussian low-pass of the centre line (removes kinks) [m]
+  osm_max_snap_m: 25.0        # driven-line points farther than this from OSM are gaps [m]
+  osm_min_snapped_pct: 95.0   # an OSM candidate must cover this much of the driven lap
+  tum_match:                  # TUM layout accepted if the driven laps satisfy both
+    max_median_offset_frac: 0.5   # median |alpha| < this * half width
+    min_pct_within: 95.0          # % of samples inside the bounds (+ tolerance below)
+    position_tolerance_m: 1.0     # telemetry position error + kerb use [m]
+
+season:
+  year: 2026                  # season whose calendar and car are modelled
+  fallback_year: 2025         # data year for circuits not (yet) raced in `year`
+  completed_only: true        # only build/report/show circuits already raced in `year`
+  session_name: "Qualifying"
+
+openf1:
+  base_url: "https://api.openf1.org/v1"
+  min_interval_s: 2.1         # throttle between requests [s]; free tier = 30 req/min
+  max_retries: 6
+  top_n_drivers: 10           # fastest lap of the N quickest drivers per session
+
+osm:
+  bbox_half_deg: 0.03
+  endpoints:
+    - "https://overpass-api.de/api/interpreter"
+    - "https://overpass.kumi.systems/api/interpreter"
+    - "https://overpass.private.coffee/api/interpreter"
+
+telemetry:
+  season: 2024
+  session: "Q"
+  top_n_laps_per_driver: 1
+  drop_offtrack: true
+  require_accurate: true
+
+vehicle:
+  g: 9.81                    # gravitational acceleration [m/s^2]
+  mass_kg: 800.0             # nominal mass (informational only) [kg]
+  v_max_ms: 100.0            # hard cap on speed [m/s]
+  v_min_ms: 5.0              # minimum speed to avoid division by zero [m/s]
+  bounds:                    # see docs/MODEL.md for justification
+    mu: [1.5, 4.0]           # widened from 3.5: 2026 fits reached the old bound
+    c_l: [0.0001, 0.002]
+    c_d: [0.00005, 0.002]    # widened from 0.001: absorbs 2026 energy clipping on straights
+    p_spec_w_per_kg: [400, 1400]   # widened: 1000 was reached (effective, incl. ERS)
+    mu_x_brake: [1.0, 4.0]   # widened from 1.5: fit reached the old lower bound
+    mu_x_drive: [0.8, 3.0]
+    a_brake_cap_ms2: [30, 65]
+  grip_utilization_grid: [0.55, 0.65, 0.75, 0.85, 0.95, 1.05]  # gamma values tabulated
+
+calibration:
+  envelope_quantile: 0.98
+  speed_bin_kmh: 10
+  loss: "soft_l1"
+  max_nfev: 5000
+  seed: 42
+
+optimize:
+  lambda_grid: [1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1]
+  coarse_ds_m: 10.0
+  fine_ds_m: 6.0              # 6 m gives the same optimum as 4 m (Hungaroring 80.31 vs 80.34 s) and solves robustly
+  w_reg: 1.0e-4              # NLP regularizer weight
+  history_frames: 60         # optimizer iterates kept for the app's replay
+  fine_max_iter: 800         # fine solves warm-started from the coarse solution need few
+  ipopt:
+    max_iter: 3000
+    tol: 1.0e-6
+    print_level: 0
+
+validation:
+  holdout: "leave_one_circuit_out"
+  sensitivity_pct: 5
+
+paths:
+  cache_dir: "cache"
+  data_raw: "data/raw"
+  data_interim: "data/interim"
+  data_processed: "data/processed"
+  models_dir: "models"
+  figures_dir: "reports/figures"
+  tum_repo: "data/raw/racetrack-database"
+  openf1_cache: "cache/openf1"
+  osm_cache: "cache/osm"
+  season_dir: "data/season"     # per-circuit artifacts read by the app

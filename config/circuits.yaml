@@ -1,0 +1,320 @@
+# Circuit registry – 2026 FIA Formula One World Championship calendar.
+#
+# Source of the calendar: OpenF1 /sessions?year=2026 (checked 2026-10-28). Bahrain and
+# Saudi Arabia were cancelled in 2026 (OpenF1 is_cancelled=true); they are kept here with
+# status "cancelled" so their geometry can still be built from 2025 data.
+#
+# Fields
+#   round:           2026 round number (null for cancelled events)
+#   name:            display name
+#   openf1_key:      OpenF1 / MultiViewer circuit_key
+#   fastf1_event:    FastF1 event name (FastF1 downloads are blocked since 2026; cache only)
+#   tum_file:        TUM racetrack-database track file, or null if TUM has no such circuit.
+#                    A TUM layout that no longer matches the driven laps is rejected
+#                    automatically by the alignment check and OSM is used instead.
+#   lat, lon:        approximate circuit centre [deg], used for the OSM query box
+#   nominal_width_m: assumed track width when TUM widths are unavailable [m]
+#                    (FIA Grade 1 minimum is 12 m; street circuits are narrower in places)
+#   code:            three-letter track code shown in the web app's timing tower
+#   status:          raced | upcoming | cancelled (data year is picked automatically)
+
+circuits:
+  melbourne:
+    round: 1
+    code: "MEL"
+    name: "Albert Park"
+    openf1_key: 10
+    fastf1_event: "Australian Grand Prix"
+    tum_file: "Melbourne.csv"        # pre-2022 layout in TUM
+    lat: -37.8497
+    lon: 144.9680
+    nominal_width_m: 12.0
+    status: raced
+
+  shanghai:
+    round: 2
+    code: "SHA"
+    name: "Shanghai International Circuit"
+    openf1_key: 49
+    fastf1_event: "Chinese Grand Prix"
+    tum_file: "Shanghai.csv"
+    lat: 31.3389
+    lon: 121.2200
+    nominal_width_m: 14.0
+    status: raced
+
+  suzuka:
+    round: 3
+    code: "SUZ"
+    name: "Suzuka"
+    openf1_key: 46
+    fastf1_event: "Japanese Grand Prix"
+    tum_file: "Suzuka.csv"
+    lat: 34.8431
+    lon: 136.5410
+    nominal_width_m: 12.0
+    status: raced
+
+  miami:
+    round: 4
+    code: "MIA"
+    name: "Miami International Autodrome"
+    openf1_key: 151
+    fastf1_event: "Miami Grand Prix"
+    tum_file: null
+    lat: 25.9581
+    lon: -80.2389
+    nominal_width_m: 12.0
+    status: raced
+
+  montreal:
+    round: 5
+    code: "MTL"
+    name: "Circuit Gilles Villeneuve"
+    openf1_key: 23
+    fastf1_event: "Canadian Grand Prix"
+    tum_file: "Montreal.csv"
+    lat: 45.5000
+    lon: -73.5228
+    nominal_width_m: 11.0
+    status: raced
+
+  monaco:
+    round: 6
+    code: "MON"
+    name: "Circuit de Monaco"
+    openf1_key: 22
+    fastf1_event: "Monaco Grand Prix"
+    tum_file: null
+    lat: 43.7347
+    lon: 7.4206
+    nominal_width_m: 9.0
+    status: raced
+
+  catalunya:
+    round: 7
+    code: "BCN"
+    name: "Circuit de Barcelona-Catalunya"
+    openf1_key: 15
+    fastf1_event: "Barcelona Grand Prix"
+    tum_file: "Catalunya.csv"        # TUM may still have the pre-2023 final chicane
+    lat: 41.5700
+    lon: 2.2611
+    nominal_width_m: 12.0
+    status: raced
+
+  spielberg:
+    round: 8
+    code: "RBR"
+    name: "Red Bull Ring"
+    openf1_key: 19
+    fastf1_event: "Austrian Grand Prix"
+    tum_file: "Spielberg.csv"
+    lat: 47.2197
+    lon: 14.7647
+    nominal_width_m: 12.0
+    status: raced
+
+  silverstone:
+    round: 9
+    code: "SIL"
+    name: "Silverstone"
+    openf1_key: 2
+    fastf1_event: "British Grand Prix"
+    tum_file: "Silverstone.csv"
+    lat: 52.0786
+    lon: -1.0169
+    nominal_width_m: 15.0
+    status: raced
+
+  spa:
+    round: 10
+    code: "SPA"
+    name: "Spa-Francorchamps"
+    openf1_key: 7
+    fastf1_event: "Belgian Grand Prix"
+    tum_file: "Spa.csv"
+    lat: 50.4372
+    lon: 5.9714
+    nominal_width_m: 12.0
+    status: raced
+
+  hungaroring:
+    round: 11
+    code: "HUN"
+    name: "Hungaroring"
+    openf1_key: 4
+    fastf1_event: "Hungarian Grand Prix"
+    tum_file: "Budapest.csv"
+    lat: 47.5789
+    lon: 19.2486
+    nominal_width_m: 12.0
+    status: raced
+
+  zandvoort:
+    round: 12
+    code: "ZAN"
+    name: "Zandvoort"
+    openf1_key: 55
+    fastf1_event: "Dutch Grand Prix"
+    tum_file: "Zandvoort.csv"
+    lat: 52.3888
+    lon: 4.5409
+    nominal_width_m: 10.0
+    status: raced
+
+  monza:
+    round: 13
+    code: "MZA"
+    name: "Monza"
+    openf1_key: 39
+    fastf1_event: "Italian Grand Prix"
+    tum_file: "Monza.csv"
+    lat: 45.6156
+    lon: 9.2811
+    nominal_width_m: 12.0
+    status: raced
+
+  madring:
+    round: 14
+    code: "MAD"
+    name: "Madring (Madrid)"
+    openf1_key: 153
+    fastf1_event: "Spanish Grand Prix"
+    tum_file: null
+    lat: 40.4637
+    lon: -3.6170
+    nominal_width_m: 12.0
+    status: raced
+
+  baku:
+    round: 15
+    code: "BAK"
+    name: "Baku City Circuit"
+    openf1_key: 144
+    fastf1_event: "Azerbaijan Grand Prix"
+    tum_file: null
+    lat: 40.3725
+    lon: 49.8533
+    nominal_width_m: 10.0
+    status: raced
+
+  kuala_lumpur:
+    round: 16
+    code: "SEP"
+    name: "Sepang (Kuala Lumpur)"
+    openf1_key: 12
+    fastf1_event: "Bahrain Grand Prix"   # FastF1/OpenF1 list this round under that name
+    tum_file: "Sepang.csv"
+    lat: 2.7608
+    lon: 101.7382
+    nominal_width_m: 16.0
+    status: raced
+
+  singapore:
+    round: 17
+    code: "SIN"
+    name: "Marina Bay Street Circuit"
+    openf1_key: 61
+    fastf1_event: "Singapore Grand Prix"
+    tum_file: null
+    lat: 1.2914
+    lon: 103.8640
+    nominal_width_m: 10.0
+    status: raced
+
+  austin:
+    round: 18
+    code: "COT"
+    name: "Circuit of the Americas"
+    openf1_key: 9
+    fastf1_event: "United States Grand Prix"
+    tum_file: "Austin.csv"
+    lat: 30.1328
+    lon: -97.6411
+    nominal_width_m: 15.0
+    status: raced
+
+  mexico_city:
+    round: 19
+    code: "MEX"
+    name: "Autodromo Hermanos Rodriguez"
+    openf1_key: 65
+    fastf1_event: "Mexico City Grand Prix"
+    tum_file: "MexicoCity.csv"
+    lat: 19.4042
+    lon: -99.0907
+    nominal_width_m: 12.0
+    status: upcoming
+
+  interlagos:
+    round: 20
+    code: "INT"
+    name: "Interlagos"
+    openf1_key: 14
+    fastf1_event: "São Paulo Grand Prix"
+    tum_file: "SaoPaulo.csv"
+    lat: -23.7036
+    lon: -46.6997
+    nominal_width_m: 12.0
+    status: upcoming
+
+  las_vegas:
+    round: 21
+    code: "LVS"
+    name: "Las Vegas Strip Circuit"
+    openf1_key: 152
+    fastf1_event: "Las Vegas Grand Prix"
+    tum_file: null
+    lat: 36.1147
+    lon: -115.1728
+    nominal_width_m: 12.0
+    status: upcoming
+
+  lusail:
+    round: 22
+    code: "LUS"
+    name: "Lusail International Circuit"
+    openf1_key: 150
+    fastf1_event: "Qatar Grand Prix"
+    tum_file: null
+    lat: 25.4900
+    lon: 51.4542
+    nominal_width_m: 12.0
+    status: upcoming
+
+  yas_marina:
+    round: 23
+    code: "YAS"
+    name: "Yas Marina"
+    openf1_key: 70
+    fastf1_event: "Abu Dhabi Grand Prix"
+    tum_file: "YasMarina.csv"        # pre-2021 layout in TUM
+    lat: 24.4672
+    lon: 54.6031
+    nominal_width_m: 12.0
+    status: upcoming
+
+  sakhir:
+    round: null
+    code: "BHR"
+    name: "Bahrain International Circuit"
+    openf1_key: 63
+    fastf1_event: "Bahrain Grand Prix"
+    tum_file: "Sakhir.csv"
+    lat: 26.0325
+    lon: 50.5106
+    nominal_width_m: 15.0
+    status: cancelled
+
+  jeddah:
+    round: null
+    code: "JED"
+    name: "Jeddah Corniche Circuit"
+    openf1_key: 149
+    fastf1_event: "Saudi Arabian Grand Prix"
+    tum_file: null
+    lat: 21.6319
+    lon: 39.1044
+    nominal_width_m: 11.0
+    status: cancelled

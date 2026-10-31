@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimal Lap: 2026 F1 qualifying against physics</title>
+<meta name="description" content="How fast could a 2026 Formula 1 car lap each circuit? A physics model calibrated on real qualifying telemetry, raced against every 2026 pole lap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=16">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 22c0-8 6-14 14-14h6v4h-6c-6 0-10 4-10 10v4H6z' fill='%23B14EFF'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="screen">
+
+<main class="pitwall">
+  <nav class="tower" aria-label="2026 races">
+    <button class="tower-toggle" id="tower-toggle" type="button" aria-expanded="true" aria-controls="tower">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span>Races</span>
+    </button>
+    <ol id="tower"></ol>
+  </nav>
+
+  <section class="stage" aria-label="Track">
+    <div class="stage-head">
+      <div>
+        <h1 id="event">Loading season</h1>
+        <p id="circuit" class="sub"></p>
+      </div>
+      <div class="modes" role="tablist" aria-label="View">
+        <button role="tab" data-mode="race" aria-selected="true">Race the pole lap</button>
+        <button role="tab" data-mode="line" aria-selected="false">How the line is found</button>
+        <button role="tab" data-mode="speed" aria-selected="false">How speed is decided</button>
+      </div>
+    </div>
+    <div class="track-wrap">
+      <canvas id="track" aria-label="Track map with the optimal line coloured by speed"></canvas>
+    </div>
+    <div class="infobar">
+      <div class="hud" id="hud" aria-live="off">
+        <div class="clock model"><span class="who">Model</span><span class="t" id="clock-model">0:00.000</span><span class="v" id="speed-model">0 km/h</span></div>
+        <div class="clock pole"><span class="who" id="pole-tag">Pole</span><span class="t" id="clock-pole">0:00.000</span><span class="v" id="speed-pole">0 km/h</span></div>
+        <div class="gap" id="gap">+0.000</div>
+        <div class="gap-note" id="gap-note">model against the pole lap</div>
+      </div>
+      <p class="caption" id="caption"></p>
+      <div class="legend" id="speed-legend"><span id="scale-note"></span><span>slow</span><i></i><span>fast</span></div>
+    </div>
+    <div class="transport">
+      <button id="play" class="play" aria-label="Pause">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/><path class="i-play" d="M8 5v14l11-7z"/></svg>
+      </button>
+      <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Position in the animation">
+      <div class="rates" role="group" aria-label="Playback speed">
+        <button data-rate="0.5">½×</button><button data-rate="1" class="on">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button>
+      </div>
+    </div>
+    <div class="bottom">
+    <div class="pole-card" id="pole-card">
+      <p class="label">Pole position</p>
+      <p class="driver" id="driver">–</p>
+      <p class="team" id="team"></p>
+      <dl class="times">
+        <div><dt>Real pole</dt><dd id="t-pole">–</dd></div>
+        <div class="m"><dt>Model forecast</dt><dd id="t-model">–</dd></div>
+        <div><dt>Difference</dt><dd id="t-diff">–</dd></div>
+      </dl>
+      <p class="fine" id="heldout"></p>
+    </div>
+    <div class="cockpit" aria-label="Live telemetry at the cars' positions">
+      <canvas id="gg" aria-label="Friction circle: the model car's grip use"></canvas>
+      <div class="gauges">
+        <div class="gauge model"><span class="who">Model</span><span class="kmh" id="g-model-v">0</span><span class="unit">km/h</span>
+          <div class="pedals"><i class="thr" id="g-model-thr"></i><i class="brk" id="g-model-brk"></i></div></div>
+        <div class="gauge pole"><span class="who" id="g-pole-who">Pole</span><span class="kmh" id="g-pole-v">0</span><span class="unit">km/h</span>
+          <div class="pedals"><i class="thr" id="g-pole-thr"></i><i class="brk" id="g-pole-brk"></i></div></div>
+        <p class="fine" id="g-note">Grip used: the dot inside the ellipse shows how much of the tyres' limit the model car is using.</p>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <aside class="side" aria-label="Telemetry along the lap">
+    <canvas id="charts" aria-label="Speed, throttle and brake, lateral g and gap along the lap"></canvas>
+  </aside>
+</main>
+</div>
+
+<section class="season" aria-labelledby="season-h">
+  <div class="season-head">
+    <h2 id="season-h">Model against reality, race by race</h2>
+    <p id="season-stats" class="sub"></p>
+  </div>
+  <canvas id="season-chart" aria-label="Model lap time minus pole lap time for each race"></canvas>
+  <p class="fine">Bars show the model's forecast minus the real pole, in seconds. The forecast uses that weekend's practice pace and no data from qualifying itself. Left of zero: the model is faster than the pole sitter.</p>
+</section>
+
+<section class="method" aria-labelledby="method-h">
+  <h2 id="method-h">How it works</h2>
+  <ol class="steps">
+    <li><h3>Real laps in</h3><p>For every 2026 weekend, from the F1 timing feed via OpenF1: position, speed, throttle, brake and elevation for the ten quickest laps in qualifying and in the last practice session, plus official results, sector times, speed traps, tyres and weather. Stretches where the feed froze are detected and repaired from the position data.</p></li>
+    <li><h3>A track the car can use</h3><p>Circuit edges from the TUM race-track database where its layout still matches, otherwise OpenStreetMap, aligned to the timing data and widened to where cars really went.</p></li>
+    <li><h3>A car fitted to the data</h3><p id="m-car">A point-mass car with downforce, drag and a friction ellipse, fitted to the qualifying laps.</p></li>
+    <li><h3>The fastest line</h3><p>A smooth-line first guess, then a nonlinear optimizer (CasADi + IPOPT) that moves the line and the speed together until the lap time stops falling.</p></li>
+  </ol>
+</section>
+
+<footer class="credits">
+  <p>Data: OpenF1 (unofficial F1 timing feed, for research and education), TUM racetrack-database (LGPL-3.0), © OpenStreetMap contributors (ODbL), MultiViewer corner data. Not affiliated with Formula 1.</p>
+  <p id="generated"></p>
+</footer>
+
+<script src="app.js?v=12" defer></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+# ── Python ─────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Data (never commit raw third-party data or large files) ────────────────
+data/raw/
+data/interim/
+data/processed/
+data/season/
+cache/
+*.parquet
+
+# ── Models ─────────────────────────────────────────────────────────────────
+models/
+
+# ── Reports/figures (generated) ────────────────────────────────────────────
+reports/figures/
+
+# ── IDE / OS ────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ── Test artifacts ──────────────────────────────────────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# ── Pre-commit ──────────────────────────────────────────────────────────────
+.pre-commit-config.yaml
+
+# ── Local tool settings ──
+.claude/
+Project_Spec.md
